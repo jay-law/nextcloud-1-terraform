@@ -1,18 +1,69 @@
-# nextcloud-1-terraform
+
+# Overview
+
+This tutorial is designed to walk users through installing Nextcloud in AWS (Amazon Web Services) using Terraform and Ansible.  It's more of a working example opposed to an in-depth tutorial.
+
+In the first part of the tutorial, Terraform will be used to:
+- Create an EC2 instance.  Used to host Nextcloud.
+- Create security groups and assign them to the EC2 instance.  Provides access to Nextcloud.
+
+In the second part of the tutorial, Ansible will be used to:
+- Install Nextcloud on the EC2 instance.
+- Create an admin user in Nextcloud.
+- Add the IP to the trusted_domains.  Allows access to Nextcloud.
+
+Tested with the following:
+- Local machine
+    - Ubuntu 20.04.4 LTS (64-bit)
+    - Terraform 1.1.6
+    - Ansible (core) 2.12.2
+    - Python 3.8.10
+- Remote machine (AWS EC2 instance)
+    - Ubuntu 20.04 LTS (64-bit)
 
 # Prerequisites
 
-## Ensure AWS Creds Exist
+## Technologies Used
+
+- **Nextcloud** - A self-hosted productivity platform.  
+    - Skills required - None to little
+- **AWS** - Cloud platform used to host the infrastructure.
+    - Skills required- Very little
+- **Terraform** - Tool used to create the infrastructure.
+    - Skills required - None to little
+- **Ansible** - Tool used to modify the software within the infrastructure.
+    - Skills required - None to little
+
+## Ensure AWS Creds Exist Locally
+
+An existing AWS account is required.  Follow the instructions in this link to create an account - https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/.
+
+Additionally, your AWS creds will need to configured locally.  Follow this link to get those setup - https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html.
 
 ```bash
-#Ensure AWS creds exist in `~/.aws/credentials`
+# Ensure AWS creds exist in `~/.aws/credentials`
 $ cat ~/.aws/credentials
 [default]
 aws_access_key_id=djjgoijd
 aws_secret_access_key=8dh3hgf8hfoih
 ```
+# Configure Local Environment
 
-### Generate Permission (.pem) File
+## Clone This Repo
+
+```bash
+# Clone repo with SSH if GitHub account is configured with SSH keys
+$ git clone git@github.com:jay-law/nextcloud-1-terraform.git
+
+# or
+# Clone repo with HTTPS
+$ git clone https://github.com/jay-law/nextcloud-1-terraform.git
+
+# cd into the repo directory
+$ cd nextcloud-1-terraform/ 
+```
+
+## Generate Permission (.pem) File
 
 1.  Log into AWS console
 2.  Navigate to the EC2 service
@@ -20,10 +71,14 @@ aws_secret_access_key=8dh3hgf8hfoih
 4.  Select the orange 'Create key pair' button in the middle panel
 5.  Enter 'nextcloud-1' for the name
 6.  Select 'Create key pair'
-7.  Download the pem file and copy to this directory
-    - `$ cp ~/Downloads/nextcloud-1.pem .` might work in the terminal
+7.  Download the pem file
+    - This is the only time the pem file will be available to download.  If the pem file gets lost, delete then recreate the entry
+8.  Save this file as it will be used in the next tutorial
 
-# Install Terraform (Locally)
+## Install Terraform (Locally)
+
+Terraform will be used to create the infrastructure used to host Nextcloud.
+
 Guide - https://learn.hashicorp.com/tutorials/terraform/install-cli?in=terraform/aws-get-started
 
 ```bash
@@ -54,7 +109,9 @@ $ touch ~/.bashrc
 $ terraform -install-autocomplete
 ```
 
-# Execute Terraform 
+# Build Infrastructure
+
+Once the local machine is configured, Terraform is ready to build out the infrastructure.
 
 ```bash
 # Initalize - downloads and installs the providers defined in the configuration
@@ -69,6 +126,17 @@ $ terraform validate
 # Apply - apply the configuration
 $ terraform apply
 # enter 'yes' when prompted
+
+# Terraform will now apply the changes specified in the main.tf file.  See comments in that file for block level information.
 ```
 
 Everything should be up and running.  Log into the AWS console and see if the EC2 instance is in the 'Running' state.
+
+# Next Steps
+
+Continue the tutorial with this repo - https://github.com/jay-law/nextcloud-1-ansible
+
+Or destroy the infrastructure so no additional costs are incurred.
+```bash
+$ terraform destroy
+```

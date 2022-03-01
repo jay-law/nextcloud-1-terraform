@@ -50,7 +50,7 @@ resource "aws_security_group" "sg_nextcloud" {
   }
 }
 
-# Get the latest ubuntu AMI
+# Get the latest Ubuntu AMI
 data "aws_ami" "ubuntu" {
   most_recent = true
 
@@ -67,19 +67,13 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
-# Create an elastic IP
-resource "aws_eip" "elastic_ip" {
-  instance = aws_instance.app_server.id
-  vpc      = true
-}
-
 # Set region
 provider "aws" {
   profile = "default"
   region  = "us-east-1"
 }
 
-# Create AMI
+# Create EC2 instance.  Attach security groups (created above) and key
 resource "aws_instance" "app_server" {
   ami             = data.aws_ami.ubuntu.id
   instance_type   = "t2.micro"
